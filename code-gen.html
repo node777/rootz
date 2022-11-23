@@ -1,0 +1,56 @@
+<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+<script>
+    
+    async function signMessage(tokenId) {
+        if (!tokenId){tokenId=document.getElementById('quantity').value}
+        if (!window.ethereum) return alert("Please Install Metamask");
+
+        // connect and get metamask account
+        const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+
+        // message to sign
+        const message = tokenId.toString();
+        console.log({ message });
+
+        // hash message
+        const hashedMessage = Web3.utils.sha3(message);
+        console.log({ hashedMessage });
+
+        // sign hashed message
+        const signature = await ethereum.request({
+        method: "personal_sign",
+        params: [hashedMessage, accounts[0]],
+        });
+        return message + signature;
+
+    }
+    async function generateKeys(){
+        document.getElementById("codeOutput").innerHTML = await signMessage()
+    }
+    function parseCode(code){
+        if (!code){code=document.getElementById('codeToParse').value}
+        tokenId= code.split("0x")[0]
+        signature= "0x" + code.split("0x")[1]
+        console.log(tokenId)
+        hashedMessage=Web3.utils.sha3(tokenId.toString())
+        // split signature
+        const r = signature.slice(0, 66);
+        const s = "0x" + signature.slice(66, 130);
+        const v = parseInt(signature.slice(130, 132), 16);
+        let parsedCode = JSON.stringify({ r, s, v, hashedMessage });
+        document.getElementById("parsedCode").innerHTML= parsedCode
+        return parsedCode;
+
+    }
+</script>
+Create Code<br>
+<input id="quantity" placeholder="codeId" type="number"></input><br>
+<button onclick="generateKeys()">Generate Code</button>
+
+<div id="codeOutput"></div>
+<hr>
+Parse Code<br>
+<input id="codeToParse" placeholder="code"></input><br>
+<button onclick="parseCode()">Parse Code</button>
+
+<div id="parsedCode"></div>
