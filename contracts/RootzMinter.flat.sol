@@ -235,4 +235,9 @@ contract RootzMinter is Ownable {
     function setPrice(uint256 _tokenPrice) external onlyOwner{
         tokenPrice = _tokenPrice;
     }
+    
+    function widthdraw(uint256 amount, address payable reciever) public payable onlyOwner{
+        (bool sent, bytes memory data) = reciever.call{value: amount}("");
+        require(sent, "Failed to send Ether");
+    }
 }
