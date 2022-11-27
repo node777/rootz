@@ -1133,6 +1133,14 @@ contract ROOTZ is ERC721, Ownable {
     function _baseURI() internal view override returns (string memory) {
         return uri;
     }
+    function _beforeTokenTransfer(
+        address from, 
+        address to, 
+        uint256 tokenId
+    ) internal override virtual {
+        require(from == address(0), "Err: token is soulbound");   
+        super._beforeTokenTransfer(from, to, tokenId);  
+    }
     function mint(uint tokenID, address reciever) external{
         require(msg.sender==minter, "User is not Minter");
         _mint(reciever, tokenID);
