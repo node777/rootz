@@ -5,23 +5,30 @@
         if (!tokenId){tokenId=document.getElementById('quantity').value}
         if (!window.ethereum) return alert("Please Install Metamask");
 
-        // connect and get metamask account
-        const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+        
+			const web3 = new Web3(window.ethereum);
+        let pk= ""
+        let ac= web3.eth.accounts.privateKeyToAccount(pk)
+        // // connect and get metamask account
+        // const accounts = await ethereum.request({ method: "eth_requestAccounts" });
 
-        // message to sign
+        // // message to sign
         const message = tokenId.toString();
         console.log({ message });
 
-        // hash message
+        // // hash message
         const hashedMessage = Web3.utils.sha3(message);
         console.log({ hashedMessage });
 
-        // sign hashed message
-        const signature = await ethereum.request({
-        method: "personal_sign",
-        params: [hashedMessage, accounts[0]],
-        });
-        return message + signature;
+        // // sign hashed message
+        // const signature = await ethereum.request({
+        // method: "personal_sign",
+        // params: [hashedMessage, "0x7777C54C58497eC850EDb8Fb77FE3D809d7DE69A"],
+        // });
+        const signature = await web3.eth.accounts.sign(hashedMessage, pk)
+        console.log(signature)
+        return message+signature.signature
+        // return message + signature;
 
     }
     async function generateKeys(){
