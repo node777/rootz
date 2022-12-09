@@ -4633,7 +4633,7 @@
 	  </script>
     <script>
 		let rootz = {
-		  mintContract:"0x74654c5a8c7095f8c4a88a090d2c71db7dd87b4b",
+		  mintContract:"0x1eC121d74E550705d9E5530a774769D4645bbaA4",
 		  mintContractABI:[
 		  {
 			"inputs": [
@@ -4847,28 +4847,30 @@
 		  }
 		],
 		  async mint(){
-			const web3 = new Web3(window.ethereum);
-			await window.ethereum.enable();
-  
-			let contract = new web3.eth.Contract(rootz.mintContractABI, rootz.mintContract)
-			let p=parseCode()
-			if(!p.v){
-				alert("Invalid mint code")
-				return
-			}
-			
-			try{
-				contract.methods.mint(p.t, p.v, p.r, p.s).send({
-			  from:window.ethereum.selectedAddress,
-			  value:"2000000000000000"
-			})
-			
-			}catch(e){
-				alert("Invalid Code")
-				console.log(e)
-			}
-		  }
-		}
+        const web3 = new Web3(window.ethereum);
+        await window.ethereum.enable();
+    
+        let contract = new web3.eth.Contract(rootz.mintContractABI, rootz.mintContract)
+        let p=parseCode()
+        if(!p.v){
+          alert("Invalid mint code")
+          return
+        }
+        
+        try{
+          let amount = p.t<=200?0:await contract.methods.tokenPrice().call();
+          console.log(amount)
+          contract.methods.mint(p.t, p.v, p.r, p.s).send({
+          from:window.ethereum.selectedAddress,
+          value:amount
+        })
+        
+        }catch(e){
+          alert("Invalid Code")
+          console.log(e)
+        }
+      }
+    }
 	  </script>
   </body>
 </html>
